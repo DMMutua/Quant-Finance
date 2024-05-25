@@ -3,15 +3,11 @@ import pandas as pd
 import yfinance as yf
 from hmmlearn import hmm
 import matplotlib.pyplot as plt
+from data import load_data, engineer_features
 
-# Import Data for S&P 500
-data = yf.download("SPY")
+data = load_data("SPY")
+features = engineer_features(data)
 
-# Computes Returns and Range
-returns = np.log(data.Close / data.Close.shift(1))
-range = (data.High - data.Low)
-features = pd.concat([returns, range], axis=1).dropna()
-features.columns = ["returns", "range"]
 
 class GMM_Regimes:
     """
@@ -44,7 +40,7 @@ class GMM_Regimes:
 
 
 # Fit Model
-Regimes = GMM_Regimes(n_iter=100000)
+Regimes = GMM_Regimes()
 model = Regimes.make_model()
 model.fit(features)
 
